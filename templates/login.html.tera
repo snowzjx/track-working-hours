@@ -1,0 +1,14 @@
+{% extends "base" %}
+
+{% block content %}
+<h1>This is our login page</h1>
+<p>
+    <form action="/login" method="post">
+        <label for="uname">Username:</label><br>
+        <input type="text" id="username" name="username" value="Username"><br>
+        <label for="password">Password:</label><br>
+        <input type="text" id="password" name="password" value="Password"><br><br>
+        <input type="submit" value="Submit">
+      </form>
+</p>
+{% endblock content %} 

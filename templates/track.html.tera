@@ -1,0 +1,10 @@
+{% extends "base" %}
+
+{% block content %}
+
+{% for tracking in trackings %}
+<p>{{ tracking.username }}</p>
+<p>{{ tracking.project_id}}</p>
+{% endfor %}
+
+{% endblock content %} 
