@@ -114,3 +114,15 @@ pub fn select_trackings_by_project<'a>(_project: &'a Project) -> Result<Vec<Trac
         .order(created_time.desc())
         .load::<Tracking>(&conn)
 }
+
+pub fn select_project_trackings_by_user<'a>(_user: &'a User) -> Result<Vec<(String, i32, String)>, diesel::result::Error> {
+    use schema::trackings;
+    use schema::projects;
+
+    let conn = establish_connection();
+
+    Tracking::belonging_to(_user)
+        .inner_join(projects::table)
+        .select((trackings::username, projects::id, projects::name))
+        .load(&conn)
+}
