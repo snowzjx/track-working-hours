@@ -18,7 +18,10 @@ fn main() {
             pages::logout,
             pages::tracking,
             pages::post_tracking,
+            pages::del_tracking,
             pages::error,
+            pages::forget,
+            pages::post_forget,
         ])
         .attach(Template::fairing())
         .attach(Session::fairing())

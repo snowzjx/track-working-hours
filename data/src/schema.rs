@@ -15,7 +15,8 @@ table! {
 }
 
 table! {
-    trackings (username, project_id, created_time) {
+    trackings (id) {
+        id -> Int4,
         username -> Varchar,
         project_id -> Int4,
         created_time -> Date,

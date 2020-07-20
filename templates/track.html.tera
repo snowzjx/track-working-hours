@@ -3,7 +3,7 @@
 {% block content %}
 
 {% for project_tracking in project_trackings %}
-<p>{{ project_tracking.0.id }} | {{ project_tracking.0.name }} | {{ project_tracking.1.created_time }} | {{ project_tracking.1.recorded_time }}</p>
+<p>{{ project_tracking.1.id }} -> {{ project_tracking.0.id }} | {{ project_tracking.0.name }} | {{ project_tracking.1.created_time }} | {{ project_tracking.1.recorded_time }}</p><a href="/track/del/{{project_tracking.1.id}}">delete</a>
 {% endfor %}
 
 {% endblock content %} 

@@ -9,6 +9,7 @@ use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use std::env;
+use chrono::NaiveDate;
 
 fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -77,7 +78,7 @@ pub fn create_user<'a>(_username: &'a str, _password: &'a str, _display_name: &'
         .get_result(&conn)
 }
 
-use self::models::{Tracking, NewTracking};
+use self::models::{Tracking, NewTracking, NewTrackingWithDate};
 
 pub fn create_tracking<'a>(_username: &'a str, _project_id: i32, _recorded_time: f32) -> Result<Tracking, diesel::result::Error> {
     use schema::trackings;
@@ -107,6 +108,25 @@ pub fn create_trackings<'a>(_new_trackings: Vec<(&'a str, i32, f32)>) -> Result<
             recorded_time: value.2,
         }
     }).collect::<Vec<NewTracking>>();
+    
+    diesel::insert_into(trackings::table)
+        .values(new_trackings)
+        .get_results(&conn)
+}
+
+pub fn create_trackings_with_date<'a>(_new_trackings: Vec<(&'a str, i32, f32, NaiveDate)>) -> Result<Vec<Tracking>, diesel::result::Error> {
+    use schema::trackings;
+
+    let conn = establish_connection();
+
+    let new_trackings = _new_trackings.iter().map(|value| {
+        NewTrackingWithDate {
+            username: value.0,
+            project_id: value.1,
+            created_time: value.3,
+            recorded_time: value.2,
+        }
+    }).collect::<Vec<NewTrackingWithDate>>();
     
     diesel::insert_into(trackings::table)
         .values(new_trackings)
@@ -144,6 +164,16 @@ pub fn select_project_trackings_by_user<'a>(_user: &'a User) -> Result<Vec<(Proj
         .order(trackings::created_time.desc())
         .select((projects::all_columns, trackings::all_columns))
         .load::<(Project, Tracking)>(&conn)
+}
+
+pub fn del_tracking_by_id<'a>(_username: &'a str, _track_id: i32) -> Result<usize, diesel::result::Error> {
+    use schema::trackings::dsl::*;
+
+    let conn = establish_connection();
+
+    diesel::delete(trackings.filter(id.eq(_track_id)).filter(username.eq(_username)))
+        .execute(&conn)
+
 }
 
 use self::models::{Assign, NewAssign};

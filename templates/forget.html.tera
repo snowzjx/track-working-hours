@@ -1,0 +1,13 @@
+{% extends "base" %}
+
+{% block content %}
+<h1>Welcome {{ display_name }}</h1>
+<h2>I forget to fill in the data of {{year}}-{{month}}-{{day}}</h1>
+<form action="/forget/{{year}}/{{month}}/{{day}}" method="post">
+{% for project in assigned_projects %}
+<p>{{ project.id }} | {{ project.name }} </p>
+<input type="text" id="{{ project.id }}" name="{{ project.id }}" value="0"><br>
+{% endfor %}
+<input type="submit" value="Submit">
+</form>
+{% endblock content %}

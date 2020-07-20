@@ -35,10 +35,10 @@ pub struct NewUser<'a> {
 
 use super::schema::trackings;
 #[derive(Identifiable, Queryable, Associations, Serialize, Debug)]
-#[primary_key(username, project_id, created_time)]
 #[belongs_to(User, foreign_key = "username")]
 #[belongs_to(Project)]
 pub struct Tracking {
+    pub id: i32,
     pub username: String,
     pub project_id: i32,
     pub created_time: chrono::NaiveDate,
@@ -50,6 +50,15 @@ pub struct Tracking {
 pub struct NewTracking<'a> {
     pub username: &'a str,
     pub project_id: i32,
+    pub recorded_time: f32,
+}
+
+#[derive(Insertable)]
+#[table_name="trackings"]
+pub struct NewTrackingWithDate<'a> {
+    pub username: &'a str,
+    pub project_id: i32,
+    pub created_time: chrono::NaiveDate,
     pub recorded_time: f32,
 }
 
