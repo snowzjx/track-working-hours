@@ -29,4 +29,22 @@ fn main() {
 
     let tracking = create_tracking("test", 1, 0.5);
     println!("{:?}", tracking);
+
+    let assign = create_assign("snow", 2);
+    println!("Created {:?}", assign);
+
+    let assign = create_assign("snow", 3);
+    println!("Created {:?}", assign);
+
+    let assign = create_assign("snow", 4);
+    println!("Created {:?}", assign);
+
+    let tracking = create_tracking("snow", 1, 0.5);
+    println!("{:?}", tracking);
+
+    let tracking = create_tracking("snow", 2, 1.0);
+    println!("{:?}", tracking);
+
+    let tracking = create_tracking("snow", 3, 5.0);
+    println!("{:?}", tracking);
 }

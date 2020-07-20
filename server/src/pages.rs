@@ -32,6 +32,11 @@ pub fn index(session: Session) -> std::result::Result<Template, Redirect> {
                 let mut context = Context::new();
                 let display_name = &user.display_name;
                 context.insert("display_name", display_name);
+                let assigned_projects = select_assigned_projects(user);
+                match assigned_projects {
+                    Ok(assigned_projects) => context.insert("assigned_projects", &assigned_projects),
+                    Err(_) => (),
+                }
                 Ok(Template::render("index", context))
             }
             None => {
@@ -81,9 +86,11 @@ pub fn tracking(session: Session) -> std::result::Result<Template, Redirect> {
         match &user_wrapper.user {
             Some(user) => {
                 let mut context = Context::new();
-                let trackings = select_trackings_by_user(user);
-                match trackings {
-                    Ok(trackings) => context.insert("trackings", &trackings),
+                let project_trackings = select_project_trackings_by_user(user);
+                match project_trackings {
+                    Ok(project_trackings) => {
+                        context.insert("project_trackings", &project_trackings)
+                    },
                     Err(_) => ()
                 }
                 Ok(Template::render("track", context))

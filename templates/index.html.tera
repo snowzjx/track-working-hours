@@ -2,4 +2,7 @@
 
 {% block content %}
 <h1>Welcome {{ display_name }}</h1>
+{% for project in assigned_projects %}
+<p>{{ project.id }} | {{ project.name }}</p>
+{% endfor %}
 {% endblock content %} 

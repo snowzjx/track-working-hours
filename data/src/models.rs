@@ -52,3 +52,20 @@ pub struct NewTracking<'a> {
     pub project_id: i32,
     pub recorded_time: f32,
 }
+
+use super::schema::assigns;
+#[derive(Identifiable, Queryable, Associations, Serialize, Debug)]
+#[primary_key(username, project_id)]
+#[belongs_to(User, foreign_key = "username")]
+#[belongs_to(Project)]
+pub struct Assign {
+    pub username: String,
+    pub project_id: i32,
+}
+
+#[derive(Insertable)]
+#[table_name="assigns"]
+pub struct NewAssign<'a> {
+    pub username: &'a str,
+    pub project_id: i32,
+}

@@ -79,13 +79,13 @@ pub fn create_user<'a>(_username: &'a str, _password: &'a str, _display_name: &'
 
 use self::models::{Tracking, NewTracking};
 
-pub fn create_tracking<'a>(_ussername: &'a str, _project_id: i32, _recorded_time: f32) -> Result<Tracking, diesel::result::Error> {
+pub fn create_tracking<'a>(_username: &'a str, _project_id: i32, _recorded_time: f32) -> Result<Tracking, diesel::result::Error> {
     use schema::trackings;
 
     let conn = establish_connection();
 
     let new_tracking = NewTracking {
-        username: _ussername,
+        username: _username,
         project_id: _project_id,
         recorded_time: _recorded_time,
     };
@@ -126,4 +126,33 @@ pub fn select_project_trackings_by_user<'a>(_user: &'a User) -> Result<Vec<(Proj
         .order(trackings::created_time.desc())
         .select((projects::all_columns, trackings::all_columns))
         .load::<(Project, Tracking)>(&conn)
+}
+
+use self::models::{Assign, NewAssign};
+
+pub fn create_assign<'a>(_username: &'a str, _project_id: i32) -> Result<Assign, diesel::result::Error> {
+    use schema::assigns;
+
+    let conn = establish_connection();
+
+    let new_assign = NewAssign {
+        username: _username,
+        project_id: _project_id,
+    };
+    
+    diesel::insert_into(assigns::table)
+        .values(&new_assign)
+        .get_result(&conn)
+}
+
+
+pub fn select_assigned_projects<'a>(_user: &'a User) -> Result<Vec<Project>, diesel::result::Error> {
+    use schema::projects;
+
+    let conn = establish_connection();
+
+    Assign::belonging_to(_user)
+        .inner_join(projects::table)
+        .select(projects::all_columns)
+        .load::<Project>(&conn)
 }

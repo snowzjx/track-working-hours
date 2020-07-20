@@ -2,9 +2,8 @@
 
 {% block content %}
 
-{% for tracking in trackings %}
-<p>{{ tracking.username }}</p>
-<p>{{ tracking.project_id}}</p>
+{% for project_tracking in project_trackings %}
+<p>{{ project_tracking.0.id }} | {{ project_tracking.0.name }} | {{ project_tracking.1.created_time }} | {{ project_tracking.1.recorded_time }}</p>
 {% endfor %}
 
 {% endblock content %} 
