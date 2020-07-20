@@ -15,4 +15,7 @@ fn main() {
     let project = &projects.unwrap()[0];
     let trackings = select_trackings_by_project(&project);
     println!("{:?}", trackings);
+
+    let project_trackings = select_project_trackings_by_user(&user);
+    println!("{:?}", project_trackings);
 }
