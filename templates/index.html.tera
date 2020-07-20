@@ -2,7 +2,11 @@
 
 {% block content %}
 <h1>Welcome {{ display_name }}</h1>
+<form action="/track" method="post">
 {% for project in assigned_projects %}
-<p>{{ project.id }} | {{ project.name }}</p>
+<p>{{ project.id }} | {{ project.name }} </p>
+<input type="text" id="{{ project.id }}" name="{{ project.id }}" value="0"><br>
 {% endfor %}
-{% endblock content %} 
+<input type="submit" value="Submit">
+</form>
+{% endblock content %}

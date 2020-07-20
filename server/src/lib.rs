@@ -5,4 +5,5 @@ pub mod pages;
 
 pub mod requests {
     pub mod login_form;
+    pub mod track_form;
 }

@@ -41,7 +41,7 @@ use super::schema::trackings;
 pub struct Tracking {
     pub username: String,
     pub project_id: i32,
-    pub created_time: chrono::NaiveDateTime,
+    pub created_time: chrono::NaiveDate,
     pub recorded_time: f32,
 }
 

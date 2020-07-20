@@ -2,10 +2,12 @@ use rocket::response::{Flash, Redirect};
 use rocket_contrib::templates::Template;
 use rocket_contrib::templates::tera::Context;
 use rocket::request::Form;
+use rocket::request::FlashMessage;
 
 use std::collections::HashMap;
 
 use crate::requests::login_form::LoginForm;
+use crate::requests::track_form::TrackForm;
 
 use data::models::*;
 use data::*;
@@ -65,11 +67,10 @@ pub fn post_login(session: Session, form: Form<LoginForm>) -> std::result::Resul
             session.tap(|user_wrapper| {
                 user_wrapper.user = Some(user);
             });
+            Ok(Redirect::to(uri!(super::pages::index)))
         },
-        _ => (),
+        _ => Err(Flash::error(Redirect::to("/error"), "No user found ..."))
     }
-
-    Ok(Redirect::to(uri!(super::pages::index)))
 }
 
 #[get("/logout")]
@@ -100,4 +101,40 @@ pub fn tracking(session: Session) -> std::result::Result<Template, Redirect> {
             }
         }
     })
+}
+
+#[post("/track", data = "<form>")]
+pub fn post_tracking(session: Session, form: Form<TrackForm>) -> std::result::Result<Redirect, Flash<Redirect>> {
+    session.tap(|user_wrapper| {
+        match &user_wrapper.user {
+            Some(user) => {
+                let map = &form.map;
+                let mut new_trackings = Vec::<(&str, i32, f32)>::new();
+                for (project_id, recorded_time) in map {
+                    match (project_id.parse::<i32>(), recorded_time.parse::<f32>()) {
+                        (Ok(project_id), Ok(recorded_time)) => {
+                            new_trackings.push((&user.username, project_id, recorded_time));
+                        }
+                        _ => return Err(Flash::error(Redirect::to("/error"), "Error phasing values ..."))
+                    }
+                }
+                match create_trackings(new_trackings) {
+                    Ok(_) => Ok(Redirect::to(uri!(super::pages::index))),
+                    Err(err) => {
+                        // let err_msg = err.description();
+                        Err(Flash::error(Redirect::to("/error"), format!("Error storing trackings ...\nCaused by:\n\t{:?}", err)))
+                    }
+                }
+            }
+            None => {
+                Err(Flash::error(Redirect::to("/error"), "No user found ..."))
+            }
+        }
+    })
+}
+
+#[get("/error")]
+pub fn error(flash: Option<FlashMessage>) -> String {
+    flash.map(|msg| format!("{}: {}", msg.name(), msg.msg()))
+         .unwrap_or_else(|| "Error!".to_string())
 }

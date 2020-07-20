@@ -18,7 +18,7 @@ table! {
     trackings (username, project_id, created_time) {
         username -> Varchar,
         project_id -> Int4,
-        created_time -> Timestamp,
+        created_time -> Date,
         recorded_time -> Float4,
     }
 }

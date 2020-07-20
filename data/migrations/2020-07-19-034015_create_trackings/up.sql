@@ -2,7 +2,7 @@
 CREATE TABLE trackings (
   username VARCHAR NOT NULL ,
   project_id INTEGER NOT NULL,
-  created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_time DATE NOT NULL DEFAULT CURRENT_DATE,
   recorded_time REAL NOT NULL,
   PRIMARY KEY(username, project_id, created_time),
   CONSTRAINT fk_username

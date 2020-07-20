@@ -95,6 +95,24 @@ pub fn create_tracking<'a>(_username: &'a str, _project_id: i32, _recorded_time:
         .get_result(&conn)
 }
 
+pub fn create_trackings<'a>(_new_trackings: Vec<(&'a str, i32, f32)>) -> Result<Vec<Tracking>, diesel::result::Error> {
+    use schema::trackings;
+
+    let conn = establish_connection();
+
+    let new_trackings = _new_trackings.iter().map(|value| {
+        NewTracking {
+            username: value.0,
+            project_id: value.1,
+            recorded_time: value.2,
+        }
+    }).collect::<Vec<NewTracking>>();
+    
+    diesel::insert_into(trackings::table)
+        .values(new_trackings)
+        .get_results(&conn)
+}
+
 pub fn select_trackings_by_user<'a>(_user: &'a User) -> Result<Vec<Tracking>, diesel::result::Error> {
     use schema::trackings::dsl::*;
 
