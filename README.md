@@ -3,7 +3,11 @@
 ## Installation
 
 ```
-yum install postgresql
+apt install build-essential postgresql postgresql-contrib libpq-dev
+```
+
+```
+/usr/lib/postgresql/10/bin/pg_ctl -D /etc/postgresql/10/main/  -l logfile start
 ```
 
 ```
@@ -31,11 +35,13 @@ cargo install diesel_cli --no-default-features --features postgres
 ```
 
 ```
-echo DATABASE_URL=postgres://user:password@localhost/track_working_hours > .env
+echo DATABASE_URL=postgres://postgres@localhost/track_working_hours > .env
 ```
 
 ```
-cd data; diesel setup
+cd data
+diesel setup
+cd ..
 ```
 
 ```
