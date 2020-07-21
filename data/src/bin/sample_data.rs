@@ -3,7 +3,7 @@ extern crate data;
 use self::data::*;
 
 fn main() {
-    let projects = show_project();
+    let projects = select_projects();
     println!("{:?}", projects);
 
     let user = select_user("snow", "123").unwrap().unwrap(); // Result -> Option -> User

@@ -22,7 +22,7 @@ fn establish_connection() -> PgConnection {
 
 use self::models::{Project, NewProject};
 
-pub fn show_project() -> Result<Vec<Project>, diesel::result::Error> {
+pub fn select_projects() -> Result<Vec<Project>, diesel::result::Error> {
     use schema::projects::dsl::*;
 
     let conn = establish_connection();
@@ -131,6 +131,20 @@ pub fn create_trackings_with_date<'a>(_new_trackings: Vec<(&'a str, i32, f32, Na
     diesel::insert_into(trackings::table)
         .values(new_trackings)
         .get_results(&conn)
+}
+
+pub fn select_trackings() -> Result<Vec<(Project, User, Tracking)>, diesel::result::Error> {
+    use schema::trackings::dsl::*;
+    use schema::trackings;
+    use schema::projects;
+    use schema::users;
+
+    let conn = establish_connection();
+
+    trackings.inner_join(users::table)
+        .inner_join(projects::table)
+        .select((projects::all_columns, (users::username, users::display_name), trackings::all_columns))
+        .load::<(Project, User, Tracking)>(&conn)
 }
 
 pub fn select_trackings_by_user<'a>(_user: &'a User) -> Result<Vec<Tracking>, diesel::result::Error> {
