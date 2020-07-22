@@ -3,7 +3,7 @@
 {% block content %}
 
 {% for project_id, values in trackings %}
-<p>{{ project_id }} {{ values[0].0.name }} </p>
+<p>{{ project_id }} {{ values[0].0.name }} {{ values[0].0.status }} </p>
 {% for value in values %}
 <p>{{ value.1.display_name }} {{ value.2 }}</p>
 {% endfor %}
