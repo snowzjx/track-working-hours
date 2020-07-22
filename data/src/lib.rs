@@ -8,7 +8,10 @@ pub mod schema;
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
+
 use std::env;
+use std::collections::HashMap;
+
 use chrono::NaiveDate;
 
 fn establish_connection() -> PgConnection {
@@ -145,6 +148,50 @@ pub fn select_trackings() -> Result<Vec<(Project, User, Tracking)>, diesel::resu
         .inner_join(projects::table)
         .select((projects::all_columns, (users::username, users::display_name), trackings::all_columns))
         .load::<(Project, User, Tracking)>(&conn)
+}
+
+macro_rules! allow_group_by {
+    ($($col: ty),+) => {
+        allow_group_by!(($($col),+,); $($col),+);
+    };
+    ($group_by:ty; $($col_for: ty),+) => {
+        $(
+            impl
+                ::diesel::expression::ValidGrouping<$group_by> for $col_for
+            {
+                type IsAggregate = ::diesel::expression::is_aggregate::Yes;
+            }
+        )+
+    };
+}
+
+pub fn select_grouped_trackings<'a>() -> Result<HashMap<i32, Vec<(User, Option<f32>)>>, diesel::result::Error> {
+
+    allow_group_by!(
+        schema::projects::id,
+        schema::users::username, 
+        schema::users::display_name);
+
+    use schema::trackings::dsl::*;
+    use schema::trackings;
+    use schema::projects;
+    use schema::users;
+    use diesel::dsl::sum;
+
+    use itertools::Itertools;
+
+    let conn = establish_connection();
+
+    let db_results = trackings
+        .inner_join(users::table)
+        .inner_join(projects::table)
+        .group_by((projects::id, users::username, users::display_name))
+        .select((projects::id, (users::username, users::display_name), sum(trackings::recorded_time)))
+        .load::<(i32, User, Option<f32>)>(&conn)?;
+
+    let results = db_results.into_iter().map(|ele| (ele.0, (ele.1, ele.2))).into_group_map();
+    
+    Ok(results)
 }
 
 pub fn select_trackings_by_user<'a>(_user: &'a User) -> Result<Vec<Tracking>, diesel::result::Error> {
