@@ -198,6 +198,7 @@ pub fn select_grouped_trackings<'a>() -> Result<HashMap<i32, Vec<(Project, User,
         .select(((projects::id, projects::name, projects::status, projects::info, projects::priority), 
             (users::username, users::display_name, users::is_admin), 
             sum(trackings::recorded_time)))
+        .order_by(projects::id)
         .load::<(Project, User, Option<f32>)>(&conn)?;
 
     // let results = db_results.into_iter().map(|ele| (ele.0, (ele.1, ele.2))).into_group_map();

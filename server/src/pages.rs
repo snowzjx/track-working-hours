@@ -1,4 +1,4 @@
-use rocket::response::{Flash, Redirect};
+use rocket::response::{Flash, Redirect, NamedFile};
 use rocket_contrib::templates::Template;
 use rocket_contrib::templates::tera::Context;
 use rocket::request::Form;
@@ -13,6 +13,8 @@ use crate::requests::track_form::TrackForm;
 
 use data::models::*;
 use data::*;
+
+use export_csv::*;
 
 pub struct UserWrapper {
     pub user: Option<User>,
@@ -265,4 +267,29 @@ pub fn admin(session: Session) -> std::result::Result<Template, Flash<Redirect>>
 pub fn error(flash: Option<FlashMessage>) -> String {
     flash.map(|msg| format!("{}: {}", msg.name(), msg.msg()))
          .unwrap_or_else(|| "Error!".to_string())
+}
+
+#[get("/csv")]
+pub fn csv(session: Session) -> std::result::Result<NamedFile, Flash<Redirect>> {
+    session.tap(|user_wrapper| {
+        match &user_wrapper.user {
+            Some(user) => {
+                if user.is_admin == false {
+                    return Err(Flash::error(Redirect::to("/error"), "You are not admin ..."))
+                }
+                match export_csv() {
+                    Ok(_) => {
+                        match NamedFile::open("exported.csv") {
+                            Ok(file) => Ok(file),
+                            Err(_) => Err(Flash::error(Redirect::to("/error"), "Error opening CSV file ..."))
+                        }
+                    },
+                    Err(_) => Err(Flash::error(Redirect::to("/error"), "Error generating CSV file ..."))
+                }
+            }
+            None => {
+                Err(Flash::error(Redirect::to("/error"), "No user found ..."))
+            }
+        }
+    })
 }

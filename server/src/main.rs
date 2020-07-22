@@ -23,6 +23,7 @@ fn main() {
             pages::forget,
             pages::post_forget,
             pages::admin,
+            pages::csv,
         ])
         .attach(Template::fairing())
         .attach(Session::fairing())
