@@ -34,13 +34,14 @@ pub fn select_projects() -> Result<Vec<Project>, diesel::result::Error> {
         .load::<Project>(&conn)
 }
 
-pub fn create_project<'a>(_name: &'a str, _info: &'a str, _priority: i32) -> Result<Project, diesel::result::Error> {
+pub fn create_project<'a>(_name: &'a str, _status: &'a str, _info: &'a str, _priority: i32) -> Result<Project, diesel::result::Error> {
     use schema::projects;
 
     let conn = establish_connection();
 
     let new_project = NewProject {
         name: _name,
+        status: _status,
         info: _info,
         priority: _priority,
     };
@@ -57,14 +58,14 @@ pub fn select_user<'a>(_username: &'a str, _password: &'a str) -> Result<Option<
 
     let conn = establish_connection();
 
-    users.select((username, display_name))
+    users.select((username, display_name, is_admin))
         .filter(username.eq(_username))
         .filter(password.eq(_password))
         .first::<User>(&conn)
         .optional()
 }
 
-pub fn create_user<'a>(_username: &'a str, _password: &'a str, _display_name: &'a str) -> Result<User, diesel::result::Error> {
+pub fn create_user<'a>(_username: &'a str, _password: &'a str, _display_name: &'a str, _is_admin: bool) -> Result<User, diesel::result::Error> {
     use schema::users;
 
     let conn = establish_connection();
@@ -73,11 +74,12 @@ pub fn create_user<'a>(_username: &'a str, _password: &'a str, _display_name: &'
         username: _username,
         password: _password,
         display_name: _display_name,
+        is_admin: _is_admin,
     };
 
     diesel::insert_into(users::table)
         .values(&new_user)
-        .returning((users::username, users::display_name))
+        .returning((users::username, users::display_name, users::is_admin))
         .get_result(&conn)
 }
 
@@ -146,7 +148,7 @@ pub fn select_trackings() -> Result<Vec<(Project, User, Tracking)>, diesel::resu
 
     trackings.inner_join(users::table)
         .inner_join(projects::table)
-        .select((projects::all_columns, (users::username, users::display_name), trackings::all_columns))
+        .select((projects::all_columns, (users::username, users::display_name, users::is_admin), trackings::all_columns))
         .load::<(Project, User, Tracking)>(&conn)
 }
 
@@ -165,12 +167,18 @@ macro_rules! allow_group_by {
     };
 }
 
-pub fn select_grouped_trackings<'a>() -> Result<HashMap<i32, Vec<(User, Option<f32>)>>, diesel::result::Error> {
-
+// pub fn select_grouped_trackings<'a>() -> Result<HashMap<Project, Vec<(User, Option<f32>)>>, diesel::result::Error> {
+pub fn select_grouped_trackings<'a>() -> Result<HashMap<i32, Vec<(Project, User, Option<f32>)>>, diesel::result::Error> {
     allow_group_by!(
         schema::projects::id,
+        schema::projects::name,
+        schema::projects::status,
+        schema::projects::info,
+        schema::projects::priority,
         schema::users::username, 
-        schema::users::display_name);
+        schema::users::display_name,
+        schema::users::is_admin
+    );
 
     use schema::trackings::dsl::*;
     use schema::trackings;
@@ -185,11 +193,15 @@ pub fn select_grouped_trackings<'a>() -> Result<HashMap<i32, Vec<(User, Option<f
     let db_results = trackings
         .inner_join(users::table)
         .inner_join(projects::table)
-        .group_by((projects::id, users::username, users::display_name))
-        .select((projects::id, (users::username, users::display_name), sum(trackings::recorded_time)))
-        .load::<(i32, User, Option<f32>)>(&conn)?;
+        .group_by((projects::id, projects::name, projects::status, projects::info, projects::priority, 
+            users::username, users::display_name, users::is_admin))
+        .select(((projects::id, projects::name, projects::status, projects::info, projects::priority), 
+            (users::username, users::display_name, users::is_admin), 
+            sum(trackings::recorded_time)))
+        .load::<(Project, User, Option<f32>)>(&conn)?;
 
-    let results = db_results.into_iter().map(|ele| (ele.0, (ele.1, ele.2))).into_group_map();
+    // let results = db_results.into_iter().map(|ele| (ele.0, (ele.1, ele.2))).into_group_map();
+    let results = db_results.into_iter().map(|ele| (ele.0.id, (ele.0, ele.1, ele.2))).into_group_map();
     
     Ok(results)
 }

@@ -3,48 +3,40 @@ extern crate data;
 use self::data::*;
 
 fn main() {
-    let project = create_project("其他项目", "Other URLs" , 1);
-    println!("Created {:?}", project);
-    
-    let project = create_project("Cloud Kitchen", "Sample URL1", 5);
-    println!("Created {:?}", project);
 
-    let project = create_project("废钢质量检判断", "Sample URL2", 5);
-    println!("Created {:?}", project);
+    let project1 = create_project("Cloud Kitchen", "POC", "Sample URL1", 5).unwrap();
+    println!("Created {:?}", project1);
 
-    let project = create_project("烧桔颗粒度检测", "Sample URL3", 4);
-    println!("Created {:?}", project);
+    let project2 = create_project("废钢质量检判断", "正式", "Sample URL2", 5).unwrap();
+    println!("Created {:?}", project2);
 
-    let user = create_user("snow", "123", "Junxue ZHANG");
-    println!("Created {:?}", user);
+    let project3 = create_project("烧桔颗粒度检测", "POC", "Sample URL3", 4).unwrap();
+    println!("Created {:?}", project3);
 
-    let tracking = create_tracking("snow", 1, 0.5);
-    println!("{:?}", tracking);
+    let project4 = create_project("其他项目", "调研", "Other URLs" , 1).unwrap();
+    println!("Created {:?}", project4);
 
-    let tracking = create_tracking("snow", 2, 0.5);
-    println!("{:?}", tracking);
+    let user_snow = create_user("snow", "123", "Junxue ZHANG", true).unwrap();
+    println!("Created {:?}", user_snow);
 
-    let tracking = create_tracking("snow", 10, 0.5);
-    println!("{:?}", tracking);
+    let user_junhuan = create_user("junhuan", "123", "Junhuna Sun", false).unwrap();
+    println!("Created {:?}", user_snow);
 
-    let tracking = create_tracking("test", 1, 0.5);
-    println!("{:?}", tracking);
-
-    let assign = create_assign("snow", 2);
+    let assign = create_assign(&user_snow.username, project1.id);
     println!("Created {:?}", assign);
 
-    let assign = create_assign("snow", 3);
+    let assign = create_assign(&user_snow.username, project2.id);
     println!("Created {:?}", assign);
 
-    let assign = create_assign("snow", 4);
+    let assign = create_assign(&user_snow.username, project3.id);
     println!("Created {:?}", assign);
 
-    let tracking = create_tracking("snow", 1, 0.5);
-    println!("{:?}", tracking);
+    let assign = create_assign(&user_snow.username, project4.id);
+    println!("Created {:?}", assign);
 
-    let tracking = create_tracking("snow", 2, 1.0);
-    println!("{:?}", tracking);
+    let assign = create_assign(&user_junhuan.username, project1.id);
+    println!("Created {:?}", assign);
 
-    let tracking = create_tracking("snow", 3, 5.0);
-    println!("{:?}", tracking);
+    let assign = create_assign(&user_junhuan.username, project4.id);
+    println!("Created {:?}", assign);
 }

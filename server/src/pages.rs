@@ -224,7 +224,6 @@ pub fn del_tracking(session: Session, track_id: i32) -> std::result::Result<Redi
                 match del_tracking_by_id(username, track_id) {
                     Ok(_) => Ok(Redirect::to(uri!(super::pages::tracking))),
                     Err(err) => {
-                        // let err_msg = err.description();
                         Err(Flash::error(Redirect::to("/error"), format!("Error delete trackings ...\nCaused by:\n\t{:?}", err)))
                     }
                 }
@@ -235,6 +234,32 @@ pub fn del_tracking(session: Session, track_id: i32) -> std::result::Result<Redi
         }
     })
 }
+
+#[get("/admin")]
+pub fn admin(session: Session) -> std::result::Result<Template, Flash<Redirect>> {
+    session.tap(|user_wrapper| {
+        match &user_wrapper.user {
+            Some(user) => {
+                if user.is_admin == false {
+                    return Err(Flash::error(Redirect::to("/error"), "You are not admin ..."))
+                }
+                match select_grouped_trackings() {
+                    Ok(trackings) => {
+                        let mut context = Context::new();
+                        // let mut context = HashMap::new();
+                        context.insert("trackings", &trackings);
+                        Ok(Template::render("admin", context))
+                    }
+                    Err(_) => return Err(Flash::error(Redirect::to("/error"), "Error select grouped trackings ..."))
+                }
+            }
+            None => {
+                Err(Flash::error(Redirect::to("/error"), "No user found ..."))
+            }
+        }
+    })
+}
+
 
 #[get("/error")]
 pub fn error(flash: Option<FlashMessage>) -> String {

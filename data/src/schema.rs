@@ -9,6 +9,7 @@ table! {
     projects (id) {
         id -> Int4,
         name -> Varchar,
+        status -> Varchar,
         info -> Text,
         priority -> Int4,
     }
@@ -29,6 +30,7 @@ table! {
         username -> Varchar,
         password -> Varchar,
         display_name -> Varchar,
+        is_admin -> Bool,
     }
 }
 

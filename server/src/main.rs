@@ -22,6 +22,7 @@ fn main() {
             pages::error,
             pages::forget,
             pages::post_forget,
+            pages::admin,
         ])
         .attach(Template::fairing())
         .attach(Session::fairing())
