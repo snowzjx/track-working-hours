@@ -9,6 +9,8 @@ use rocket_contrib::templates::Template;
 use server::pages;
 use server::pages::Session;
 
+use server::dingtalk_pages;
+
 fn main() {
     rocket::ignite()
         .mount("/", routes![
@@ -24,6 +26,8 @@ fn main() {
             pages::post_forget,
             pages::admin,
             pages::csv,
+            dingtalk_pages::login,
+            dingtalk_pages::get_assigned_projects,
         ])
         .attach(Template::fairing())
         .attach(Session::fairing())

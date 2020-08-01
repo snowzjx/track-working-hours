@@ -2,6 +2,7 @@
 #[macro_use] extern crate rocket;
 
 pub mod pages;
+pub mod dingtalk_pages;
 
 pub mod requests {
     pub mod login_form;

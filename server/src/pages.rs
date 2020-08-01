@@ -262,7 +262,6 @@ pub fn admin(session: Session) -> std::result::Result<Template, Flash<Redirect>>
     })
 }
 
-
 #[get("/error")]
 pub fn error(flash: Option<FlashMessage>) -> String {
     flash.map(|msg| format!("{}: {}", msg.name(), msg.msg()))
