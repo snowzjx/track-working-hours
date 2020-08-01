@@ -1,0 +1,30 @@
+<view class="page">
+    <!-- <button type="primary" size="" onTap="loginSystem"> 点击登录 </button> -->
+    <!-- <button type="primary" size="" onTap="loadProject"> 获取项目 </button> -->
+
+    <view hidden="{{hideList}}">
+        <!-- <view class="row">AuthCode:{{authCode}}</view> -->
+        <!-- <view class="row">userId:{{userId}}</view> -->
+        <view class="row">已登陆:{{userName}}</view>
+    </view>
+
+    <form onSubmit="formSubmit" onReset="formReset">
+    
+    <block a:for="{{assignedProjects}}">
+    <view class="section section-gap">
+        <text class="section-title">{{item.name}}</text>
+        <view class="body-view">
+        <slider name="{{item.id}}" value="0" min="0" max="10" step="0.5" show-value/>
+    </view>
+    </block>
+
+    <!-- <view class="section">
+    <block a:for="{{assignedProjects}}">
+        <view class="section__title"> {{item.name}} </view>
+        <input name="{{item.id}}" placeholder="please input here" />
+    </block>
+    </view> -->
+
+    <button formType="submit">提交</button>
+    </form>
+</view>

@@ -28,6 +28,8 @@ fn main() {
             pages::csv,
             dingtalk_pages::login,
             dingtalk_pages::get_assigned_projects,
+            dingtalk_pages::add_record,
+            dingtalk_pages::get_record,
         ])
         .attach(Template::fairing())
         .attach(Session::fairing())

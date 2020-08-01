@@ -1,0 +1,7 @@
+<view class="page">
+<block a:for="{{recordedTrackings}}">
+<view class="text-view">
+    <text>{{item[0].name}}</text> <text>{{item[1].recorded_time}}</text> <text>{{item[1].created_time}}</text>
+</view>
+</block>
+</view>
