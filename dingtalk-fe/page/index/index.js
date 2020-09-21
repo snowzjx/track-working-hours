@@ -4,7 +4,7 @@ let app = getApp();
 //内网穿透工具介绍:
 // https://open-doc.dingtalk.com/microapp/debug/ucof2g
 //替换成开发者后台设置的安全域名
-let domain = "http://localhost:3000";
+let domain = "http://ec2-52-81-189-87.cn-north-1.compute.amazonaws.com.cn:3000";
 let login_url = domain + '/dingtalk/login';
 // let url = domain + '/login';
 let assigned_project_url = domain + '/dingtalk/assigned_projects';

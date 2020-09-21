@@ -1,6 +1,6 @@
 let app = getApp();
 
-let domain = "http://localhost:3000";
+let domain = "http://ec2-52-81-189-87.cn-north-1.compute.amazonaws.com.cn:3000";
 let track_url = domain + '/dingtalk/record'
 
 Page({
